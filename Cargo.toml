@@ -1,0 +1,19 @@
+[package]
+authors = ["Sirius902"]
+description = "An example of calling .NET NativeAOT compiled code from Rust."
+edition = "2021"
+license = "MIT"
+name = "dotnet-aot-rust"
+publish = false
+version = "0.0.0"
+
+[build-dependencies]
+cc = { version = "1", optional = true }
+dirs = { version = "5", optional = true }
+
+[dependencies]
+
+[features]
+default = ["dylib"]
+dylib = []
+static = ["dep:cc", "dep:dirs"]

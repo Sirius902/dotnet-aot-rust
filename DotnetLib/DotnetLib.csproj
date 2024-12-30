@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <SelfContained>true</SelfContained>
+    <IsTrimmable>true</IsTrimmable>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <Target Name="CopyNativeLib" AfterTargets="Publish">
+    <ItemGroup>
+      <NativeLib Include="$(OutputPath)/native/$(ProjectName).lib" />
+    </ItemGroup>
+    <Copy SourceFiles="@(NativeLib)" DestinationFolder="$(PublishDir)" />
+  </Target>
+
+</Project>
