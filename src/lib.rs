@@ -11,6 +11,7 @@ extern "C" {
 pub fn init() {
     #[cfg(feature = "static")]
     unsafe {
+        // FUTURE(Sirius902) Additional initialization may need to be added here.
         assert!(rh_initialize(), "Failed to initialize .NET runtime");
     }
 }

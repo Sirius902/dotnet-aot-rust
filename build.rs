@@ -17,7 +17,6 @@ pub fn main() {
 
     let dotnet_out = PathBuf::from(std::env::var("OUT_DIR").unwrap()).join("DotnetLib");
 
-    // TODO(Sirius902) Restore deps.
     let dotnet_publish = {
         let mut command = Command::new("dotnet");
 
@@ -61,6 +60,12 @@ fn link_dylib() {
 
 #[cfg(feature = "static")]
 fn link_static() {
+    let target_arch = match std::env::var("CARGO_CFG_TARGET_ARCH").unwrap().as_str() {
+        "x86_64" => "x64",
+        "aarch64" => "arm64",
+        arch @ _ => panic!("unsupported target architecture: {arch}"),
+    };
+
     let nuget_dir = dirs::home_dir()
         .expect("failed to find home dir")
         .join(".nuget");
@@ -68,7 +73,9 @@ fn link_static() {
     // NOTE(Sirius902) The version string must match the installed .NET compiler version.
     let ilcompiler_sdk = nuget_dir
         .join("packages")
-        .join("runtime.win-arm64.microsoft.dotnet.ilcompiler")
+        .join(format!(
+            "runtime.win-{target_arch}.microsoft.dotnet.ilcompiler"
+        ))
         .join("9.0.0")
         .join("sdk");
 
@@ -81,14 +88,14 @@ fn link_static() {
         .object(ilcompiler_sdk.join("bootstrapperdll.obj"))
         .compile("bootstrapperdll");
 
+    // NOTE(Sirius902) It may be necessary to add additional system libraries here depending
+    // on what the .NET code depends on.
     println!("cargo:rustc-link-lib=dylib=advapi32");
     println!("cargo:rustc-link-lib=dylib=bcrypt");
     println!("cargo:rustc-link-lib=dylib=ole32");
     println!("cargo:rustc-link-lib=dylib=oleaut32");
 
-    println!("cargo:rustc-link-arg=-Wl,--whole-archive");
     println!("cargo:rustc-link-lib=static=bootstrapperdll");
-    println!("cargo:rustc-link-arg=-Wl,--no-whole-archive");
 
     println!("cargo:rustc-link-lib=static=Runtime.WorkstationGC");
     println!("cargo:rustc-link-lib=static=System.Globalization.Native.Aot");
