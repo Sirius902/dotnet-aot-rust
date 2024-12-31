@@ -104,5 +104,9 @@ fn link_static() {
     println!("cargo:rustc-link-lib=static=zlibstatic");
     println!("cargo:rustc-link-lib=static=standalonegc-enabled");
 
+    if target_arch == "x64" {
+        println!("cargo:rustc-link-lib=static=Runtime.VxsortDisabled");
+    }
+
     println!("cargo:rustc-link-lib=static=DotnetLib");
 }
